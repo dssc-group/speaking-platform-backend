@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bupt.mapper.TeacherTaskMapper">
+    <insert id="insertTask" parameterType="com.bupt.pojo.TeacherTask">
+        INSERT INTO test_db.test_taskInfo (taskName,deadline,taskRequirements,filePath,submitcontent,reviewProcess,reviewSettings,weights,createTime,owner)
+        VALUES (#{name},#{deadline},#{taskRequirements},#{filePath},#{submitContentJson},#{reviewProcessJson},#{reviewSettingsJson},#{weightsJson},#{createTime},#{owner})
+    </insert>
+    <resultMap id="taskMap" type="com.bupt.pojo.TeacherTask">
+        <result property="id" column="id"/>
+        <result property="owner" column="owner"/>
+        <result property="createTime" column="createTime"/>
+        <result property="name" column="taskName"/>
+        <result property="deadline" column="deadline"/>
+        <result property="taskRequirements" column="taskRequirements"/>
+        <result property="filePath" column="filePath"/>
+        <result property="submitContentJson" column="submitContent"/>
+        <result property="reviewProcessJson" column="reviewProcess"/>
+        <result property="reviewSettingsJson" column="reviewSettings"/>
+        <result property="weightsJson" column="weights"/>
+    </resultMap>
+    <select id="getTeacherTasks" resultMap="taskMap">
+        SELECT  * FROM test_db.test_taskInfo
+    </select>
+    <delete id="deleteTeacherTask">
+        DELETE from test_db.test_taskInfo where id = #{id}
+    </delete>
+    <select id="deleteFilePath" resultType="string">
+        SELECT filePath from test_db.test_taskInfo where id = #{id}
+    </select>
+</mapper>

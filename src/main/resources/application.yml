@@ -1,0 +1,28 @@
+#启动端口设置
+server:
+  port: 8080
+
+#数据库配置
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306
+    username: root
+    password: Xzh215213
+  servlet:
+    multipart:
+      max-file-size: 100GB
+      max-request-size: 10000GB
+
+#数据存储目录设置
+data:
+  video:
+    path: /users/xiongzihua/vedio/
+  teacherTask:
+    path: /users/xiongzihua/teacherTask/
+
+#Mybatis配置
+#mybatis:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#    map-underscore-to-camel-case: true

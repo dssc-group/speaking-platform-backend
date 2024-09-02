@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--对应mapper接口的对象-->
+<mapper namespace="com.bupt.mapper.MemberMapper">
+<!--&lt;!&ndash;    id为对应的函数名字 resultType为对应列表的存储的单个元素类型&ndash;&gt;-->
+    <select id="list" resultType="com.bupt.pojo.Member">
+        select *
+        from test_db.t_translation_group_member
+        <where>
+            <if test="stuIndex != null">
+                F_student_id like concat('%',#{stuIndex},'%')
+            </if>
+            <if test="name != null">
+                and F_group_member_nickname like concat('%',#{name},'%')
+            </if>
+            <if test="mail != null">
+                and F_group_member_name like concat('%',#{mail},'%')
+            </if>
+        </where>
+    </select>
+</mapper>
