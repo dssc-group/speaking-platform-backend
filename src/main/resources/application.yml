@@ -1,25 +1,70 @@
 #启动端口设置
 server:
-  port: 8080
+  port: 8081
 
 #数据库配置
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306
+    url: ${MYSQL_ADDRESS:jdbc:mysql://localhost:3307/test_db}
     username: root
     password: Xzh215213
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
   servlet:
     multipart:
       max-file-size: 100GB
       max-request-size: 10000GB
 
+  redis:
+    host: ${REDIS_HOME:localhost}
+    port: ${REDIS_PORT:6379}
+    database: 0
+
+  data:
+    mongodb:
+      host: ${MONGODB_HOST:localhost}
+      port: ${MONGODB_PORT:27018}
+      database: speech_task
+  mail:
+    host: bupt.edu.cn
+    
+
+redis:
+  redisHome: ${REDIS_HOME:localhost}
+  redisPort: ${REDIS_PORT:6379}
+
+minio:
+  rootUser: ${MINIO_ROOT_USER:xiongzihua}
+  rootPassword: ${MINIO_ROOT_PASSWORD:xzh215213}
+  endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+
 #数据存储目录设置
 data:
   video:
-    path: /users/xiongzihua/vedio/
+    path: /Users/xiongzihua/docker/speaker/speak-data/video/
   teacherTask:
-    path: /users/xiongzihua/teacherTask/
+    path: /Users/xiongzihua/docker/speaker/speak-data/teacherTask/
+  audio:
+    path: /Users/xiongzihua/docker/speaker/speak-data/audio/
+  ppt:
+    path: /Users/xiongzihua/docker/speaker/speak-data/ppt/
+  word:
+    path: /Users/xiongzihua/docker/speaker/speak-data/word/
+
+LLM:
+  model: lite
+  stream: false
+  apiPassword: NCuAkFnhwOMnzpoIddrB:rdHMEVmZardEaevYlePH
+  contentType: application/json
+  requestUrl: https://spark-api-open.xf-yun.com/v1/chat/completions
+  prompt: 你是一名演讲稿评审专家，请你严格评审下面的英文演讲稿，给我演讲稿的评分，评分为百分制，要求严格区分不同层次的演讲稿。给我JSON形式的回答，回答的格式是${grade:}，除此之外不需要其他任何信息。
+  top_p: 0.1
+
 
 #Mybatis配置
 #mybatis:

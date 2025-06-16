@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @Component
 public class UserInfo {
-    private String user_name;
-    private Integer role;
+    private String userName;
+    private String nickName;
+    private String password;
+    private Integer roleId;
+    private Integer userId;
 }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--对应mapper接口的对象-->
+<mapper namespace="com.bupt.mapper.AccountMapper">
+    <!--&lt;!&ndash;    id为对应的函数名字 resultType为对应列表的存储的单个元素类型&ndash;&gt;-->
+    <!--创建账户-->
+    <insert id="createAccount" parameterType="com.bupt.pojo.Account" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO test_db.Users (UserName,Password,RoleId,NickName,CreateTime,Mobile,StudentId,School,Major,Dept,Sex)
+        VALUES (#{userName},#{password},#{roleId},#{nickName},#{createTime},#{mobile},#{studentId},#{school},#{major},#{dept},#{sex})
+    </insert>
+
+    <update id="changePassword">
+        UPDATE test_db.Users
+        SET PassWord = #{password}
+        WHERE UserId = #{userId}
+    </update>
+
+    <select id="searchByName" resultType="int" parameterType="com.bupt.pojo.Account">
+        select count(*) from test_db.Users where UserName = #{userName}
+    </select>
+    <select id="searchPassWordById" resultType="java.lang.String">
+        select Password from test_db.Users where UserId = #{userId}
+    </select>
+
+</mapper>
