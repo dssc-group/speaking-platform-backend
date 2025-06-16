@@ -5,20 +5,83 @@
 
 <!--对应mapper接口的对象-->
 <mapper namespace="com.bupt.mapper.MemberMapper">
-<!--&lt;!&ndash;    id为对应的函数名字 resultType为对应列表的存储的单个元素类型&ndash;&gt;-->
+    <update id="updateStuInfo">
+        UPDATE test_db.Users
+        SET
+            <trim suffixOverrides=",">
+                <if test="userName != null">
+                    UserName = #{userName};
+                </if>
+                <if test="nickName != null">
+                    NickName = #{nickName},
+                </if>
+                <if test="mobile != null">
+                     Mobile = #{mobile},
+                </if>
+                <if test="studentId != null">
+                    StudentId = #{studentId},
+                </if>
+                <if test="school != null">
+                    School = #{school},
+                </if>
+                <if test="major != null">
+                    Major = #{major},
+                </if>
+                <if test="dept != null">
+                    Dept = #{dept},
+                </if>
+                <if test="modifyTime != null">
+                    ModifyTime = #{modifyTime},
+                </if>
+                <if test="sex != null">
+                    Sex = #{sex}
+                </if>
+            </trim>
+        WHERE UserId = #{userId}
+    </update>
+    <!--&lt;!&ndash;    id为对应的函数名字 resultType为对应列表的存储的单个元素类型&ndash;&gt;-->
     <select id="list" resultType="com.bupt.pojo.Member">
         select *
-        from test_db.t_translation_group_member
+        from test_db.Users
         <where>
             <if test="stuIndex != null">
-                F_student_id like concat('%',#{stuIndex},'%')
+                StudentId like concat('%',#{stuIndex},'%')
             </if>
             <if test="name != null">
-                and F_group_member_nickname like concat('%',#{name},'%')
+                and NickName like concat('%',#{name},'%')
             </if>
             <if test="mail != null">
-                and F_group_member_name like concat('%',#{mail},'%')
+                and UserName like concat('%',#{mail},'%')
             </if>
         </where>
     </select>
+    <select id="searchById" resultType="com.bupt.pojo.Member">
+        select * from test_db.Users where UserId=#{userId};
+    </select>
+    <select id="searchMailExist" resultType="java.lang.Integer">
+        select count(*) from test_db.Users where UserName = #{mail};
+    </select>
+    <select id="getStuByIds" resultType="com.bupt.pojo.Member">
+        SELECT * FROM test_db.Users
+        <where>
+            UserId in
+            <foreach collection="stuIds" item="studentId" open="(" separator="," close=")">
+                #{studentId}
+            </foreach>
+            <if test="stuIndex != null">
+                AND StudentId like concat('%',#{stuIndex},'%')
+            </if>
+            <if test="name != null">
+                and NickName like concat('%',#{name},'%')
+            </if>
+            <if test="mail != null">
+                and UserName like concat('%',#{mail},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="getInfoByName" resultType="com.bupt.pojo.Member">
+        SELECT * FROM  test_db.Users where UserName = #{userName}
+    </select>
+
 </mapper>

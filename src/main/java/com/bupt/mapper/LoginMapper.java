@@ -9,8 +9,8 @@ import java.util.Map;
 
 @Mapper
 public interface LoginMapper {
-    @Select("select * from test_db.user_info where user_name = #{userName} and password =#{password}")
-    public Integer loginCheck(Login user);
-    @Select("select user_name,role from test_db.user_info where user_name = #{username} and password =#{password}")
+    @Select("select UserName,Password,RoleId from test_db.Users where UserName = #{userName}")
+    public UserInfo loginCheck(Login user);
+    @Select("select UserName,RoleId,UserId,NickName from test_db.Users where UserName = #{username}")
     public UserInfo tokenCheck(Map<String,Object> user);
 }

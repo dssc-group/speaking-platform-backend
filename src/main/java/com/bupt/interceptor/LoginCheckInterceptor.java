@@ -21,7 +21,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         String url = request.getRequestURI().toString();
 //        System.out.println(url);
         //登录操作
-        if(url.contains("login")){
+        if(url.contains("login")||url.contains("create")){//登陆/创建用户界面 ->放行
             return true;
         }
         String jwt = request.getHeader("token");

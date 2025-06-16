@@ -6,11 +6,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PageBean {
+public class PageBean<T> {
     private Long total;
-    private List<Member> rows;
+    private List<T> rows;
 }

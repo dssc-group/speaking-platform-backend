@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--对应mapper接口的对象-->
+<mapper namespace="com.bupt.mapper.ClassMapper">
+    <!--&lt;!&ndash;    id为对应的函数名字 resultType为对应列表的存储的单个元素类型&ndash;&gt;-->
+    <insert id="createClass" parameterType="com.bupt.pojo.Classes">
+        INSERT INTO test_db.Classes (ClassName,TeacherId,TeacherName,ClassIntroduction,Term,ClassTarget,StartTime,Deadline,Enable)
+        VALUES (#{className},#{teacherId},#{teacherName},#{classIntroduction},#{term},#{classTarget},#{startTime},#{deadline},#{enable})
+    </insert>
+
+    <select id="searchClasses" parameterType="int" resultType="com.bupt.pojo.Classes">
+        SELECT * FROM test_db.Classes WHERE TeacherId = #{teacherId}
+    </select>
+
+    <delete id="deleteClass" parameterType="int">
+        DELETE FROM test_db.Classes WHERE ClassId = #{classId}
+    </delete>
+
+    <delete id="deleteStuByIds">
+        DELETE FROM test_db.ClassStudents where ClassId = #{classId} AND StudentId IN
+            <foreach collection="deleteStuIds" item="stuId" open="(" separator="," close=")">
+                #{stuId}
+            </foreach>
+    </delete>
+
+    <update id="updateEnable" parameterType="int">
+        UPDATE test_db.Classes SET Enable = FALSE where ClassId = #{classId}
+    </update>
+
+<!--  批量状态修改  -->
+    <update id="updateApplicationStatus">
+        <foreach collection="approvals" item="item" index="index" open="" separator=";" close="">
+            UPDATE test_db.ClassApplications
+            SET
+                ApplicationStatus = #{item.approvalStatus},
+                ResponseDate = #{item.responseDate}
+            where ApplicationId = #{item.applicationId}
+        </foreach>
+    </update>
+
+    <insert id="studentApplication" parameterType="com.bupt.pojo.StudentApplication">
+        INSERT INTO test_db.ClassApplications(StudentId,ClassId,ApplicationStatus,ApplicationDate,TeacherId)
+        VALUES (#{studentId},#{classId},#{applicationStatus},#{applicationDate},#{teacherId})
+    </insert>
+
+    <insert id="addStudent">
+        INSERT INTO  test_db.ClassStudents(ClassId,StudentId) values (#{classId},#{stuId})
+    </insert>
+
+    <!--  批量申请查找通过申请Id  -->
+    <select id="searchByIdBatch" resultType="com.bupt.pojo.StudentApplication">
+        SELECT StudentId,ClassId
+        FROM test_db.ClassApplications
+        WHERE
+            ApplicationId IN
+            <foreach collection="approvalList" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+    </select>
+    <!--学生批量加入班级-->
+    <insert id="batchInsertStudent" parameterType="com.bupt.pojo.StudentApplication">
+        INSERT  INTO test_db.ClassStudents (ClassId,StudentId)
+        VALUES
+        <foreach collection="applications" item="item" index="index" separator=",">
+            (#{item.classId}, #{item.studentId})
+        </foreach>
+
+    </insert>
+    <!--  根据教师查询申请  -->
+    <select id="listApplication" parameterType="int" resultType="com.bupt.pojo.StudentApplication">
+        SELECT
+            ca.StudentId,
+            ca.ApplicationId,
+            ca.ClassId,
+            ca.ApplicationStatus,
+            ca.ApplicationDate,
+            ca.ResponseDate,
+            ca.TeacherId,
+            u.UserName AS UserName,
+            u.NickName AS NickName,
+            u.StudentId AS userStudentId,  -- 添加别名，避免与 ca.StudentId 冲突
+            cl.ClassName AS ClassName  -- 移除末尾的逗号
+        FROM
+            test_db.ClassApplications ca
+                JOIN
+            test_db.Users u ON ca.StudentId = u.UserId
+                JOIN
+            test_db.Classes cl ON ca.ClassId = cl.ClassId  -- 确保大小写一致
+        WHERE
+            ca.TeacherId = #{teacherId}
+    </select>
+
+
+    <!-- 定义结果映射 -->
+    <resultMap id="listApplication" type="com.bupt.pojo.StudentApplication">
+        <id property="applicationId" column="ApplicationId" />
+        <result property="studentId" column="StudentId" />
+        <result property="applicationStatus" column="ApplicationStatus" javaType="com.bupt.pojo.StudentApplication$ApplicationStatus" />
+        <result property="applicationDate" column="ApplicationDate" />
+        <result property="responseDate" column="ResponseDate" />
+        <result property="teacherId" column="TeacherId" />
+        <result property="nickName" column="NickName" />
+        <result property="userName" column="UserName" />
+        <result property="userStudentId" column="userStudentId" />
+        <result property="className" column="ClassName" />
+        <!-- 嵌套 studentInfo 的映射到 Member 对象 -->
+    </resultMap>
+
+    <select id="listStudentIds" resultType="java.lang.Integer">
+        SELECT StudentId from test_db.ClassStudents WHERE ClassId = #{classId}
+    </select>
+
+    <select id="listStudentsInfos" resultType="com.bupt.pojo.Member">
+        SELECT * FROM test_db.Users
+            <where>
+                UserId in
+                <foreach collection="studentIds" item="studentId" open="(" separator="," close=")">
+                    #{studentId}
+                </foreach>
+                <if test="stuIndex != null">
+                    AND StudentId like concat('%',#{stuIndex},'%')
+                </if>
+                <if test="name != null">
+                    and NickName like concat('%',#{name},'%')
+                </if>
+                <if test="mail != null">
+                    and UserName like concat('%',#{mail},'%')
+                </if>
+            </where>
+    </select>
+
+    <select id="listClassInfos" resultType="com.bupt.pojo.Classes">
+        SELECT * FROM test_db.Classes
+
+        WHERE ClassId IN
+        <foreach collection="classIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </select>
+
+    <select id="classBelongs" resultType="java.lang.Integer">
+        SELECT ClassId FROM test_db.ClassStudents WHERE StudentId = #{studentId}
+    </select>
+    <select id="getAllClassInfos" resultType="com.bupt.pojo.Classes">
+        SELECT * FROM test_db.Classes
+        <where>
+            <if test="className != null">
+                ClassName like concat('%',#{className},'%')
+            </if>
+            <if test="teacherName != null">
+                and TeacherName like concat('%',#{teacherName},'%')
+            </if>
+            <if test="term != null">
+                and Term like concat('%',#{term},'%')
+            </if>
+        </where>
+    </select>
+    <select id="getApplicationStatus" resultType="com.bupt.pojo.StudentApplication">
+        SELECT * FROM ClassApplications where StudentId = #{stuId}
+    </select>
+    <select id="getApplicationsByClassId" resultType="com.bupt.pojo.StudentApplication">
+        SELECT * FROM ClassApplications where ClassId = #{classId}
+    </select>
+
+</mapper>
